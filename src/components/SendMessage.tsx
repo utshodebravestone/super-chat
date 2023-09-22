@@ -1,19 +1,26 @@
 import { useState } from "react";
-import send from "../assets/images/send.svg";
+
+import { v4 as uuid } from "uuid";
+
 import { IMessage } from "../types";
 
+import send from "../assets/images/send.svg";
+
+const defaultMessage = (): IMessage => ({
+  id: uuid(),
+  text: "",
+  mine: true,
+});
+
 const SendMessage = ({ onSend }: { onSend: (message: IMessage) => void }) => {
-  const [message, setMessage] = useState<IMessage>({
-    id: "ldsj;",
-    text: "",
-    mine: true,
-  });
+  const [message, setMessage] = useState<IMessage>(defaultMessage);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
         onSend(message);
+        setMessage(defaultMessage);
       }}
       className="mt-auto w-full py-2 flex items-center gap-2"
     >

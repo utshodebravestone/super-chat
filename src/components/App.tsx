@@ -49,7 +49,7 @@ const _messages: IMessage[] = [
 
 const App = () => {
   const [messages, setMessages] = useState(_messages);
-  const lastMessageRef = useRef<HTMLElement>(null);
+  const lastMessageRef = useRef<HTMLLIElement>(null);
 
   const sendMessage = (message: IMessage): void => {
     setMessages((messages) => [...messages, message]);
