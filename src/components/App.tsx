@@ -4,12 +4,14 @@ import {
   IAppState,
   IAppStateAction,
   IMessage,
+  createAuthenticateAction,
   createSendMessageAction,
 } from "../types";
 
 import ChatRoom from "./ChatRoom";
 import SendMessage from "./SendMessage";
 import TopBar from "./TopBar";
+import SignIn from "./SignIn";
 
 const messages: IMessage[] = [
   {
@@ -54,26 +56,26 @@ const messages: IMessage[] = [
   },
 ];
 
+const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
+  switch (action.type) {
+    case "AUTHENTICATE":
+      return {
+        ...state,
+        isAuthenticated: action.payload,
+      };
+
+    case "SEND_MESSAGE":
+      return {
+        ...state,
+        messages: [...state.messages, action.payload],
+      };
+
+    default:
+      return state;
+  }
+};
+
 const App = () => {
-  const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
-    switch (action.type) {
-      case "AUTHENTICATE":
-        return {
-          ...state,
-          isAuthenticated: action.payload,
-        };
-
-      case "SEND_MESSAGE":
-        return {
-          ...state,
-          messages: [...state.messages, action.payload],
-        };
-
-      default:
-        return state;
-    }
-  };
-
   const [state, dispatch] = useReducer(reducer, {
     messages,
     isAuthenticated: false,
@@ -89,10 +91,21 @@ const App = () => {
   }, [state.messages]);
 
   return (
-    <div className="h-screen w-full px-0 md:px-20 lg:px-40 xl:px-60 mx-auto bg-zinc-100 overflow-hidden">
-      <TopBar />
-      <ChatRoom lastMessageRef={lastMessageRef} messages={state.messages} />
-      <SendMessage onSend={sendMessage} />
+    <div className="h-screen w-full px-5 md:px-20 lg:px-40 xl:px-60 mx-auto bg-zinc-100 overflow-hidden">
+      <TopBar
+        isAuthenticated={state.isAuthenticated}
+        onSignOut={() => dispatch(createAuthenticateAction(false))}
+      />
+      {state.isAuthenticated ? (
+        <>
+          <ChatRoom lastMessageRef={lastMessageRef} messages={state.messages} />
+          <SendMessage onSend={sendMessage} />
+        </>
+      ) : (
+        <>
+          <SignIn onSignIn={() => dispatch(createAuthenticateAction(true))} />
+        </>
+      )}
     </div>
   );
 };

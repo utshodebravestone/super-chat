@@ -1,10 +1,26 @@
 import logo from "../assets/images/logo.svg";
 
-const TopBar = () => {
+const TopBar = ({
+  isAuthenticated,
+  onSignOut,
+}: {
+  isAuthenticated: boolean;
+  onSignOut: () => void;
+}) => {
   return (
-    <div className="w-full py-4 flex items-center justify-center gap-2 shadow-sm">
-      <img src={logo} alt="logo" className="w-8 h-8 object-cover" />
-      <h1 className="text-2xl font-bold">Super Chat</h1>
+    <div className="w-full py-4 px-2 flex items-center justify-between shadow-sm">
+      <div className="flex items-center gap-2">
+        <img src={logo} alt="logo" className="w-8 h-8 object-cover" />
+        <h1 className="text-2xl font-bold">Super Chat</h1>
+      </div>
+      {isAuthenticated && (
+        <button
+          onClick={onSignOut}
+          className="px-4 py-2 bg-emerald-500 text-white font-medium border border-emerald-500 rounded hover:bg-transparent hover:text-emerald-500 transition-colors duration-300"
+        >
+          Sign Out
+        </button>
+      )}
     </div>
   );
 };
