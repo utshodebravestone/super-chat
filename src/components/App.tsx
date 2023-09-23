@@ -12,6 +12,8 @@ import ChatRoom from "./ChatRoom";
 import SendMessage from "./SendMessage";
 import TopBar from "./TopBar";
 import SignIn from "./SignIn";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { auth } from "../configs/firebase";
 
 const messages: IMessage[] = [
   {
@@ -78,7 +80,7 @@ const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
     messages,
-    isAuthenticated: false,
+    isAuthenticated: auth.currentUser ? true : false,
   });
   const lastMessageRef = useRef<HTMLLIElement>(null);
 
@@ -88,13 +90,15 @@ const App = () => {
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView();
-  }, [state.messages]);
+  }, [state]);
 
   return (
     <div className="h-screen w-full px-5 md:px-20 lg:px-40 xl:px-60 mx-auto bg-zinc-100 overflow-hidden">
       <TopBar
         isAuthenticated={state.isAuthenticated}
-        onSignOut={() => dispatch(createAuthenticateAction(false))}
+        onSignOut={() =>
+          signOut(auth).then(() => dispatch(createAuthenticateAction(false)))
+        }
       />
       {state.isAuthenticated ? (
         <>
@@ -103,7 +107,13 @@ const App = () => {
         </>
       ) : (
         <>
-          <SignIn onSignIn={() => dispatch(createAuthenticateAction(true))} />
+          <SignIn
+            onSignIn={() =>
+              signInWithPopup(auth, new GoogleAuthProvider()).then(() =>
+                dispatch(createAuthenticateAction(true))
+              )
+            }
+          />
         </>
       )}
     </div>
