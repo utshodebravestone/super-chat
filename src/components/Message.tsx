@@ -16,14 +16,14 @@ const Message = ({
       {!message.mine && (
         <img
           src={userImageUrl}
-          alt="User"
+          alt="user"
           className="w-10 h-10 object-cover rounded-full"
         />
       )}
       <div
         className={`max-w-[75%] px-6 py-2 bg-zinc-200 rounded-2xl shadow-md`}
       >
-        <p>{message.text}</p>
+        <p className="overflow-x-clip">{message.text}</p>
       </div>
     </div>
   );

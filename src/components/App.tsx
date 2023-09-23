@@ -1,10 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import { IMessage } from "../types";
+import { useEffect, useReducer, useRef } from "react";
+
+import {
+  IAppState,
+  IAppStateAction,
+  IMessage,
+  createSendMessageAction,
+} from "../types";
+
 import ChatRoom from "./ChatRoom";
 import SendMessage from "./SendMessage";
 import TopBar from "./TopBar";
 
-const _messages: IMessage[] = [
+const messages: IMessage[] = [
   {
     id: "lksajf;",
     text: "hey",
@@ -48,21 +55,43 @@ const _messages: IMessage[] = [
 ];
 
 const App = () => {
-  const [messages, setMessages] = useState(_messages);
+  const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
+    switch (action.type) {
+      case "AUTHENTICATE":
+        return {
+          ...state,
+          isAuthenticated: action.payload,
+        };
+
+      case "SEND_MESSAGE":
+        return {
+          ...state,
+          messages: [...state.messages, action.payload],
+        };
+
+      default:
+        return state;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, {
+    messages,
+    isAuthenticated: false,
+  });
   const lastMessageRef = useRef<HTMLLIElement>(null);
 
   const sendMessage = (message: IMessage): void => {
-    setMessages((messages) => [...messages, message]);
+    dispatch(createSendMessageAction(message));
   };
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView();
-  }, [messages]);
+  }, [state.messages]);
 
   return (
     <div className="h-screen w-full px-0 md:px-20 lg:px-40 xl:px-60 mx-auto bg-zinc-100 overflow-hidden">
       <TopBar />
-      <ChatRoom lastMessageRef={lastMessageRef} messages={messages} />
+      <ChatRoom lastMessageRef={lastMessageRef} messages={state.messages} />
       <SendMessage onSend={sendMessage} />
     </div>
   );
