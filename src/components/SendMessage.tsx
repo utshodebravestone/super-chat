@@ -10,7 +10,10 @@ import { auth } from "../configs/firebase";
 const defaultMessage = (): IMessage => ({
   id: uuid(),
   text: "",
-  uid: auth.currentUser?.uid || "", // this won't fail as we're not showing it if user is null.
+  // these or checks won't fail as we're not showing it if user is null.
+  username: auth.currentUser?.displayName || "",
+  userImage: auth.currentUser?.photoURL || "",
+  uid: auth.currentUser?.uid || "",
 });
 
 const SendMessage = ({ onSend }: { onSend: (message: IMessage) => void }) => {

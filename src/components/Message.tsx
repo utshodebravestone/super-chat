@@ -4,7 +4,6 @@ import { IMessage } from "../types";
 import useToggle from "../hooks/useToggle";
 
 const Message = ({ message }: { message: IMessage }) => {
-  const userImageUrl = "https://placekitten.com/640/360";
   const [showUsername, toggleShowUsername] = useToggle(false);
 
   return (
@@ -16,7 +15,7 @@ const Message = ({ message }: { message: IMessage }) => {
       <div className="flex gap-2">
         {message.uid !== auth.currentUser?.uid && (
           <img
-            src={userImageUrl}
+            src={message.userImage}
             alt="user"
             className="w-10 h-10 object-cover rounded-full"
           />
@@ -30,7 +29,10 @@ const Message = ({ message }: { message: IMessage }) => {
       </div>
 
       {showUsername && (
-        <small className="font-light text-xs">{message.uid}</small>
+        <small className="font-light text-xs">
+          <span className="font-medium">Sender: </span>
+          {message.username}
+        </small>
       )}
     </div>
   );
