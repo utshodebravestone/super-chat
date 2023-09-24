@@ -15,10 +15,7 @@ const ChatRoom = ({
       <ul>
         {messages.map((message) => (
           <li ref={lastMessageRef} key={message.id}>
-            <Message
-              message={message}
-              userImageUrl="https://placekitten.com/640/360"
-            />
+            <Message message={message} />
           </li>
         ))}
       </ul>

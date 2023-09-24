@@ -18,7 +18,7 @@ const TopBar = ({
       {isAuthenticated && (
         <div className="flex items-center gap-2">
           <img
-            src={auth.currentUser?.photoURL || logo}
+            src={auth.currentUser?.photoURL || ""}
             alt="user"
             className="h-10 w-10 object-cover rounded-full"
           />

@@ -1,7 +1,7 @@
 export interface IMessage {
   id: string;
   text: string;
-  mine: boolean;
+  uid: string;
 }
 
 export interface IAppState {
@@ -33,4 +33,19 @@ export const createSendMessageAction = (
   payload: message,
 });
 
-export type IAppStateAction = AuthenticateAction | SendMessageAction;
+interface SetMessageAction {
+  type: "SET_MESSAGE";
+  payload: IMessage[];
+}
+
+export const createSetMessageAction = (
+  messages: IMessage[]
+): SetMessageAction => ({
+  type: "SET_MESSAGE",
+  payload: messages,
+});
+
+export type IAppStateAction =
+  | AuthenticateAction
+  | SendMessageAction
+  | SetMessageAction;

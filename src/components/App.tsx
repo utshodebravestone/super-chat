@@ -1,4 +1,6 @@
 import { useEffect, useReducer, useRef } from "react";
+import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { getDocs } from "firebase/firestore/lite";
 
 import {
   IAppState,
@@ -6,57 +8,14 @@ import {
   IMessage,
   createAuthenticateAction,
   createSendMessageAction,
+  createSetMessageAction,
 } from "../types";
+import { auth, messagesRef } from "../configs/firebase";
 
 import ChatRoom from "./ChatRoom";
 import SendMessage from "./SendMessage";
 import TopBar from "./TopBar";
 import SignIn from "./SignIn";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { auth } from "../configs/firebase";
-
-const messages: IMessage[] = [
-  {
-    id: "lksajf;",
-    text: "hey",
-    mine: false,
-  },
-  {
-    id: "sajf;",
-    text: "hello",
-    mine: true,
-  },
-  {
-    id: "alkdj;",
-    text: "how is it going?",
-    mine: false,
-  },
-  {
-    id: "lsfj;",
-    text: "i'm not dead yet!",
-    mine: true,
-  },
-  {
-    id: "safj;",
-    text: "wanna go outside?",
-    mine: false,
-  },
-  {
-    id: "ldsjf;",
-    text: "where",
-    mine: true,
-  },
-  {
-    id: "sfda;",
-    text: "where nobody cries. where only butteries.",
-    mine: false,
-  },
-  {
-    id: "adkfjs;",
-    text: "take me away, a hiding place. take me away a sweet escape. take me away, a hiding place. take me away a sweet escape.take me away, a hiding place. take me away a sweet escape.take me away, a hiding place. take me away a sweet escape.",
-    mine: true,
-  },
-];
 
 const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
   switch (action.type) {
@@ -72,6 +31,12 @@ const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
         messages: [...state.messages, action.payload],
       };
 
+    case "SET_MESSAGE":
+      return {
+        ...state,
+        messages: action.payload,
+      };
+
     default:
       return state;
   }
@@ -79,14 +44,24 @@ const reducer = (state: IAppState, action: IAppStateAction): IAppState => {
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
-    messages,
-    isAuthenticated: auth.currentUser ? true : false,
+    messages: [],
+    isAuthenticated: false,
   });
   const lastMessageRef = useRef<HTMLLIElement>(null);
 
   const sendMessage = (message: IMessage): void => {
     dispatch(createSendMessageAction(message));
   };
+
+  useEffect(() => {
+    const setInitialState = async () => {
+      const query = await getDocs(messagesRef);
+      const messages = query.docs.map((doc) => doc.data()) as IMessage[];
+      dispatch(createSetMessageAction(messages));
+      dispatch(createAuthenticateAction(auth.currentUser ? true : false));
+    };
+    setInitialState();
+  }, []);
 
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView();

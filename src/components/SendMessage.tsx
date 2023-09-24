@@ -5,11 +5,12 @@ import { v4 as uuid } from "uuid";
 import { IMessage } from "../types";
 
 import send from "../assets/images/send.svg";
+import { auth } from "../configs/firebase";
 
 const defaultMessage = (): IMessage => ({
   id: uuid(),
   text: "",
-  mine: true,
+  uid: auth.currentUser?.uid || "", // this won't fail as we're not showing it if user is null.
 });
 
 const SendMessage = ({ onSend }: { onSend: (message: IMessage) => void }) => {
